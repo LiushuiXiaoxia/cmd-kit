@@ -15,7 +15,7 @@ dependencies {
 }
 
 tasks.test {
-    useJUnitPlatform()
+    useTestNG()
 }
 
 kotlin {
