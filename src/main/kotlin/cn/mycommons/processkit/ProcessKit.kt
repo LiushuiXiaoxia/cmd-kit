@@ -10,6 +10,7 @@ object ProcessKit {
     /**
      * 配置全局属性
      */
+    @JvmStatic
     fun setup(logEnable: Boolean, processLogback: ProcessLogback, timeout: Long) {
         Global.setup(logEnable, processLogback, timeout)
     }
@@ -17,6 +18,7 @@ object ProcessKit {
     /**
      * 仅执行，默认输出，忽略错误，返回结果码
      */
+    @JvmStatic
     fun run(cmd: String, ws: File? = null, timeout: Long = Global.timeout): Int {
         return exec(cmd, ws, true).exitValue
     }
@@ -24,6 +26,7 @@ object ProcessKit {
     /**
      * 执行，不输出，返回结果, 默认会检测直结果
      */
+    @JvmStatic
     fun call(cmd: String, ws: File? = null, timeout: Long = Global.timeout, check: Boolean = false): ProcessResult {
         return exec(cmd, ws, false).apply {
             if (check) {
@@ -35,9 +38,10 @@ object ProcessKit {
     /**
      * 最原始的方法，低级方法，需要指定详细参数
      */
+    @JvmStatic
     fun exec(
         cmd: String,
-        ws: File? ,
+        ws: File?,
         output: Boolean,
         timeout: Long = Global.timeout,
     ): ProcessResult {
@@ -52,6 +56,7 @@ object ProcessKit {
     /**
      * 执行
      */
+    @JvmStatic
     fun exec(req: ProcessReq): ProcessResult {
         return ProcessEngine(req as RealProcessReq).exec()
     }
@@ -59,6 +64,7 @@ object ProcessKit {
     /**
      * 手动创建执行，可详细自定义参数
      */
+    @JvmStatic
     fun newProcess(cmdList: List<String>, workspace: File? = null): ProcessReq {
         return RealProcessReq(cmdList = cmdList, workspace = workspace)
     }
@@ -66,6 +72,7 @@ object ProcessKit {
     /**
      * 获取已有进程执行的结果
      */
+    @JvmStatic
     fun result(p: Process, output: Boolean = false): ProcessResult {
         val req = newProcess(listOf(), null)
         req.logEnable = output
