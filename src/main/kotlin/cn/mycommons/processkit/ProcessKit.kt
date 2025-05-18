@@ -2,94 +2,76 @@ package cn.mycommons.processkit
 
 import cn.mycommons.processkit.core.Global
 import cn.mycommons.processkit.core.ProcessEngine
-import cn.mycommons.processkit.core.ProcessReq
+import cn.mycommons.processkit.core.RealProcessReq
 import cn.mycommons.processkit.core.RealProcessResult
 import java.io.File
 import java.time.LocalDateTime
 import java.util.*
 
-
-interface ProcessLog {
-    fun log(s: String)
-    fun output(s: String, error: Boolean)
-}
-
-class ProcessExecException(msg: String, e: Throwable? = null) : RuntimeException(msg, e)
-
-interface IProcessReq {
-    val cmdList: List<String>
-    val workspace: File?
-    val env: Map<String, String>?
-    val timeout: Long
-    val logEnable: Boolean
-    val processLog: ProcessLog?
-}
-
-interface ProcessResult {
-
-    val exitValue: Int
-    val all: List<String>
-    val text: String
-    val error: String
-
-    fun isSuccess(): Boolean {
-        return exitValue == 0
-    }
-
-    @Throws(ProcessExecException::class)
-    fun check(errorMessage: String): ProcessResult
-}
-
-fun ProcessResult.display(): String {
-    val r = this as RealProcessResult
-    return r.display()
-}
-
 object ProcessKit {
 
+    /**
+     * 配置全局属性
+     */
     fun setup(logEnable: Boolean, processLog: ProcessLog, timeout: Long) {
         Global.setup(logEnable, processLog, timeout)
     }
 
-    fun newProcess(cmd: String, ws: File? = null): IProcessReq {
-        return ProcessReq(listOf(cmd), ws)
+    /**
+     * 仅执行，默认输出，忽略错误，返回结果码
+     */
+    fun run(cmd: String, ws: File? = null, timeout: Long = Global.timeout): Int {
+        return exec(cmd, ws, true).exitValue
     }
 
-    fun exec(cmd: String, ws: File? = null, output: Boolean = false): ProcessResult {
-        val req = ProcessReq(
-            listOf(cmd),
-            ws,
-            logEnable = output,
-        )
-        return ProcessEngine(req).exec()
+    /**
+     * 执行，不输出，返回结果, 默认会检测直结果
+     */
+    fun call(cmd: String, ws: File? = null, timeout: Long = Global.timeout, check: Boolean = false): ProcessResult {
+        return exec(cmd, ws, false).apply {
+            if (check) {
+                check("call $cmd failed")
+            }
+        }
     }
 
+    /**
+     * 最原始的方法，低级方法，需要指定详细参数
+     */
+    fun exec(
+        cmd: String,
+        ws: File? ,
+        output: Boolean,
+        timeout: Long = Global.timeout,
+    ): ProcessResult {
+        val req = newProcess(listOf(cmd), ws)
+        (req as RealProcessReq).also {
+            it.logEnable = output
+            it.timeout = timeout
+        }
+        return exec(req)
+    }
+
+    /**
+     * 执行
+     */
+    fun exec(req: ProcessReq): ProcessResult {
+        return ProcessEngine(req as RealProcessReq).exec()
+    }
+
+    /**
+     * 手动创建执行，可详细自定义参数
+     */
+    fun newProcess(cmdList: List<String>, workspace: File? = null): ProcessReq {
+        return RealProcessReq(cmdList = cmdList, workspace = workspace)
+    }
+
+    /**
+     * 获取已有进程执行的结果
+     */
     fun result(p: Process, output: Boolean = false): ProcessResult {
-        val req = ProcessReq(
-            listOf(),
-            null,
-            logEnable = output,
-        )
-        return ProcessEngine(req).result(p)
+        val req = newProcess(listOf(), null)
+        req.logEnable = output
+        return ProcessEngine(req as RealProcessReq).result(p)
     }
-}
-
-
-data class ResultLine(val line: String, val error: Boolean = false) {
-
-    val time = LocalDateTime.now()
-}
-
-fun Process.reflectPid(): Long {
-    return kotlin.runCatching {
-        pid()
-    }.getOrElse {
-        val pid = javaClass.getDeclaredField("pid")
-        pid.isAccessible = true
-        pid.getLong(this)
-    }
-}
-
-fun Process.asProcessResult(output: Boolean = false): ProcessResult {
-    return ProcessKit.result(this, output)
 }

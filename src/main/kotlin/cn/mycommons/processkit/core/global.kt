@@ -17,6 +17,16 @@ internal object Global {
     }
 }
 
+
+internal class EmptyLog() : ProcessLog {
+    override fun log(s: String) {
+
+    }
+
+    override fun output(s: String, error: Boolean) {
+    }
+}
+
 internal class DefaultLog(private val logEnable: Boolean) : ProcessLog {
     override fun log(s: String) {
         // println(s)

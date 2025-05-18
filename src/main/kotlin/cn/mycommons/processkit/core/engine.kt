@@ -2,76 +2,36 @@ package cn.mycommons.processkit.core
 
 import cn.mycommons.processkit.*
 import java.io.File
+import java.time.LocalDateTime
 import java.util.ArrayList
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
+import kotlin.math.log
 
 
-class ProcessReq(
+class RealProcessReq(
     override val cmdList: List<String>,
     override val workspace: File? = null,
-    override val env: Map<String, String>? = null,
-    override val timeout: Long = Global.timeout,
-    override val logEnable: Boolean = true,
-    override val processLog: ProcessLog? = DefaultLog(logEnable),
-) : IProcessReq {
+    override var env: Map<String, String>? = null,
+    override var timeout: Long = Global.timeout,
+    override var logEnable: Boolean = true,
+    override var processLog: ProcessLog? = DefaultLog(logEnable),
+) : ProcessReq {
 
-    //    fun exec(): Process {
-//        val pb = ProcessBuilder(cmd.asBashCmd())
-//            .apply {
-//                directory(ws)
-//                environment().putAll(env ?: emptyMap())
-//            }
-//        return pb.start()
-//    }
-//
-//    fun run(): ProcessResult {
-//        processLog?.log("run process: cmd =  [$cmd], ws = $ws")
-//        val p = exec()
-//        return result(p)
-//    }
-//
-//    fun result(p: Process): ProcessResult {
-//        val name = cmd.trim().split(" ").firstOrNull() ?: "process"
-//        val result = ProcessResult()
-//        val count = CountDownLatch(2)
-//
-//        thread(name = "$name-${System.currentTimeMillis()}") {
-//            p.inputStream.bufferedReader().readLines().forEach {
-//                result.addLine(it, false)
-//                if (log) processLog?.output("$logPrefix$it", false)
-//            }
-//            count.countDown()
-//        }
-//        thread(name = "$name-${System.currentTimeMillis()}") {
-//            Thread.sleep(10)
-//            p.errorStream.bufferedReader().readLines().forEach {
-//                result.addLine(it, true)
-//                if (log) processLog?.output("$logPrefix$it", true)
-//            }
-//            count.countDown()
-//        }
-//
-//        if (timeout > 0) {
-//            p.waitFor(timeout, TimeUnit.MINUTES)
-//        } else {
-//            p.waitFor()
-//        }
-//        //如果命令未执行完成,则将ex设置错误属性
-//        if (p.isAlive) {
-//            result.addLine("命令未执行结束已中断", true)
-//            result.exitValue = 1
-//        } else {
-//            result.exitValue = p.exitValue()
-//        }
-//        kotlin.runCatching { count.await() }
-//        // processLog?.log("result = ${result.display()}")
-//
-//        return result
-//    }
+    val currentLog: ProcessLog by lazy {
+        if (logEnable) {
+            processLog ?: DefaultLog(true)
+        } else {
+            EmptyLog()
+        }
+    }
 }
 
+internal data class ResultLine(val line: String, val error: Boolean = false) {
+
+    val time = LocalDateTime.now()
+}
 
 internal class RealProcessResult : ProcessResult {
 
@@ -123,7 +83,7 @@ internal class RealProcessResult : ProcessResult {
     }
 }
 
-class ProcessEngine(val req: ProcessReq) {
+class ProcessEngine(val req: RealProcessReq) {
 
     private fun create(): Process {
         return ProcessBuilder(req.cmdList.asBashCmd())
@@ -134,7 +94,7 @@ class ProcessEngine(val req: ProcessReq) {
     }
 
     fun exec(): ProcessResult {
-        req.processLog?.log("run process: cmdList =  [${req.cmdList}], workspace = ${req.workspace}")
+        req.currentLog.log("run process: cmdList =  [${req.cmdList}], workspace = ${req.workspace}")
         val p = create()
         return result(p)
     }
@@ -147,7 +107,7 @@ class ProcessEngine(val req: ProcessReq) {
         thread(name = "$name-${System.currentTimeMillis()}") {
             p.inputStream.bufferedReader().readLines().forEach {
                 result.addLine(it, false)
-                req.processLog?.output(it, false)
+                req.currentLog.output(it, false)
             }
             count.countDown()
         }
@@ -155,7 +115,7 @@ class ProcessEngine(val req: ProcessReq) {
             Thread.sleep(10)
             p.errorStream.bufferedReader().readLines().forEach {
                 result.addLine(it, true)
-                req.processLog?.output(it, true)
+                req.currentLog.output(it, true)
             }
             count.countDown()
         }
