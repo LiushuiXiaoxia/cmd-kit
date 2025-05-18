@@ -1,4 +1,4 @@
-package cn.mycommons.cn.mycommons.processkit
+package cn.mycommons.processkit
 
 import java.io.File
 import java.time.LocalDateTime
@@ -15,8 +15,8 @@ object ProcessKit {
     private var globalProcessLog: ProcessLog = ProcessLog.defaultLog
 
     fun setup(processLog: ProcessLog, timeout: Long) {
-        this.globalProcessLog = processLog
-        this.timeOut = timeout
+        globalProcessLog = processLog
+        timeOut = timeout
     }
 
     fun newProcess(cmd: String, ws: File? = null): ProcessReq {

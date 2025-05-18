@@ -1,6 +1,5 @@
 package cn.mycommons.processkit
 
-import cn.mycommons.cn.mycommons.processkit.ProcessKit
 import org.testng.annotations.Test
 
 class ProcessKitTest {

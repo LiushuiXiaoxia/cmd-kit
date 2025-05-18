@@ -1,3 +1,10 @@
+buildscript{
+    repositories {
+        maven("https://maven.aliyun.com/repository/public")
+        mavenCentral()
+    }
+}
+
 plugins {
     kotlin("jvm") version "2.1.20"
 }
