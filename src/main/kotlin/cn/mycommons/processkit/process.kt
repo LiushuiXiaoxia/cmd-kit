@@ -15,6 +15,9 @@ interface ProcessLogback {
     fun output(s: String, error: Boolean)
 }
 
+/**
+ * 执行异常
+ */
 class ProcessExecException(msg: String, e: Throwable? = null) : RuntimeException(msg, e)
 
 interface ProcessReq {
