@@ -7,7 +7,6 @@ import java.util.ArrayList
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
-import kotlin.math.log
 
 
 class RealProcessReq(
@@ -16,14 +15,14 @@ class RealProcessReq(
     override var env: Map<String, String>? = null,
     override var timeout: Long = Global.timeout,
     override var logEnable: Boolean = true,
-    override var processLog: ProcessLog? = DefaultLog(logEnable),
+    override var processLogback: ProcessLogback? = DefaultLogback(logEnable),
 ) : ProcessReq {
 
-    val currentLog: ProcessLog by lazy {
+    val currentLog: ProcessLogback by lazy {
         if (logEnable) {
-            processLog ?: DefaultLog(true)
+            processLogback ?: DefaultLogback(true)
         } else {
-            EmptyLog()
+            EmptyLogback()
         }
     }
 }

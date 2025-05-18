@@ -1,6 +1,9 @@
 package cn.mycommons.processkit
 
 
+/**
+ * 获取pid
+ */
 fun Process.reflectPid(): Long {
     return kotlin.runCatching {
         pid()
@@ -11,6 +14,9 @@ fun Process.reflectPid(): Long {
     }
 }
 
+/**
+ * 获取已有进程执行的结果
+ */
 fun Process.asProcessResult(output: Boolean = false): ProcessResult {
     return ProcessKit.result(this, output)
 }

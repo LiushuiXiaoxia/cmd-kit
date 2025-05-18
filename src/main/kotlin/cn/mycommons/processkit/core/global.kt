@@ -1,6 +1,6 @@
 package cn.mycommons.processkit.core
 
-import cn.mycommons.processkit.ProcessLog
+import cn.mycommons.processkit.ProcessLogback
 
 internal object Global {
 
@@ -8,17 +8,17 @@ internal object Global {
 
     var timeout = -1L
 
-    var processLog: ProcessLog = DefaultLog(logEnable)
+    var processLogback: ProcessLogback = DefaultLogback(logEnable)
 
-    fun setup(logEnable: Boolean, processLog: ProcessLog, timeout: Long = -1) {
+    fun setup(logEnable: Boolean, processLogback: ProcessLogback, timeout: Long = -1) {
         Global.logEnable = logEnable
-        Global.processLog = processLog
+        Global.processLogback = processLogback
         Global.timeout = timeout
     }
 }
 
 
-internal class EmptyLog() : ProcessLog {
+internal class EmptyLogback() : ProcessLogback {
     override fun log(s: String) {
 
     }
@@ -27,7 +27,7 @@ internal class EmptyLog() : ProcessLog {
     }
 }
 
-internal class DefaultLog(private val logEnable: Boolean) : ProcessLog {
+internal class DefaultLogback(private val logEnable: Boolean) : ProcessLogback {
     override fun log(s: String) {
         // println(s)
     }

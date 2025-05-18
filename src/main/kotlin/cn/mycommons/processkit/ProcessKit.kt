@@ -3,18 +3,15 @@ package cn.mycommons.processkit
 import cn.mycommons.processkit.core.Global
 import cn.mycommons.processkit.core.ProcessEngine
 import cn.mycommons.processkit.core.RealProcessReq
-import cn.mycommons.processkit.core.RealProcessResult
 import java.io.File
-import java.time.LocalDateTime
-import java.util.*
 
 object ProcessKit {
 
     /**
      * 配置全局属性
      */
-    fun setup(logEnable: Boolean, processLog: ProcessLog, timeout: Long) {
-        Global.setup(logEnable, processLog, timeout)
+    fun setup(logEnable: Boolean, processLogback: ProcessLogback, timeout: Long) {
+        Global.setup(logEnable, processLogback, timeout)
     }
 
     /**
