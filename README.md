@@ -6,6 +6,7 @@
 
 # 使用方法
 
+[![](https://jitpack.io/v/LiushuiXiaoxia/process-kit.svg)](https://jitpack.io/#LiushuiXiaoxia/process-kit)
 
 ```gradle
 repositories {
