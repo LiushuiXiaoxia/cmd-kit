@@ -11,7 +11,7 @@ plugins {
     `maven-publish`
 }
 
-group = "dev.LiushuiXiaoxia"
+group = "com.github.LiushuiXiaoxia"
 version = project.properties["LIB_VERSION"].toString()
 
 repositories {
