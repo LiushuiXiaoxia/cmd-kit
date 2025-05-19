@@ -11,7 +11,11 @@ object ProcessKit {
      * 配置全局属性
      */
     @JvmStatic
-    fun setup(logEnable: Boolean, processLogback: ProcessLogback, timeout: Long) {
+    fun setup(
+        logEnable: Boolean,
+        processLogback: ProcessLogback,
+        timeout: Long = Global.DEFAULT_TIMEOUT,
+    ) {
         Global.setup(logEnable, processLogback, timeout)
     }
 
@@ -19,16 +23,27 @@ object ProcessKit {
      * 仅执行，默认输出，忽略错误，返回结果码
      */
     @JvmStatic
-    fun run(cmd: String, ws: File? = null, timeout: Long = Global.timeout): Int {
-        return exec(cmd, ws, true).exitValue
+    fun run(
+        cmd: String,
+        ws: File? = null,
+        timeout: Long = Global.DEFAULT_TIMEOUT,
+        env: Map<String, String>? = null,
+    ): Int {
+        return exec(cmd, ws, true, timeout, env).exitValue
     }
 
     /**
      * 执行，不输出，返回结果, 默认会检测直结果
      */
     @JvmStatic
-    fun call(cmd: String, ws: File? = null, timeout: Long = Global.timeout, check: Boolean = false): ProcessResult {
-        return exec(cmd, ws, false).apply {
+    fun call(
+        cmd: String,
+        ws: File? = null,
+        timeout: Long = Global.DEFAULT_TIMEOUT,
+        env: Map<String, String>? = null,
+        check: Boolean = false,
+    ): ProcessResult {
+        return exec(cmd, ws, false, timeout, env).apply {
             if (check) {
                 check("call $cmd failed")
             }
@@ -43,12 +58,14 @@ object ProcessKit {
         cmd: String,
         ws: File?,
         output: Boolean,
-        timeout: Long = Global.timeout,
+        timeout: Long = Global.DEFAULT_TIMEOUT,
+        env: Map<String, String>? = null,
     ): ProcessResult {
         val req = newProcess(listOf(cmd), ws)
         (req as RealProcessReq).also {
             it.logEnable = output
             it.timeout = timeout
+            it.env = env
         }
         return exec(req)
     }
@@ -66,7 +83,7 @@ object ProcessKit {
      */
     @JvmStatic
     fun newProcess(cmdList: List<String>, workspace: File? = null): ProcessReq {
-        return RealProcessReq(cmdList = cmdList, workspace = workspace)
+        return RealProcessReq(cmdList = cmdList, workspace = workspace,)
     }
 
     /**

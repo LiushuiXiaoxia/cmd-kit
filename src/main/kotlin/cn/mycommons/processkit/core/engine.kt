@@ -15,12 +15,12 @@ class RealProcessReq(
     override var env: Map<String, String>? = null,
     override var timeout: Long = Global.timeout,
     override var logEnable: Boolean = true,
-    override var processLogback: ProcessLogback? = DefaultLogback(logEnable),
+    override var processLogback: ProcessLogback? = null,
 ) : ProcessReq {
 
     val currentLog: ProcessLogback by lazy {
         if (logEnable) {
-            processLogback ?: DefaultLogback(true)
+            processLogback ?: Global.processLogback
         } else {
             EmptyLogback()
         }

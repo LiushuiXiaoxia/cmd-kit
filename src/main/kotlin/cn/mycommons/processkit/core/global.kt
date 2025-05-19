@@ -4,13 +4,15 @@ import cn.mycommons.processkit.ProcessLogback
 
 internal object Global {
 
+    const val DEFAULT_TIMEOUT = -1L
+
     var logEnable: Boolean = true
 
     var timeout = -1L
 
     var processLogback: ProcessLogback = DefaultLogback(logEnable)
 
-    fun setup(logEnable: Boolean, processLogback: ProcessLogback, timeout: Long = -1) {
+    fun setup(logEnable: Boolean, processLogback: ProcessLogback, timeout: Long = DEFAULT_TIMEOUT) {
         Global.logEnable = logEnable
         Global.processLogback = processLogback
         Global.timeout = timeout

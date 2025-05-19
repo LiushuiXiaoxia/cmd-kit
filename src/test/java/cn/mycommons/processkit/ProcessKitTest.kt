@@ -4,6 +4,25 @@ import org.testng.annotations.Test
 
 class ProcessKitTest {
 
+    @Test
+    fun setup() {
+        ProcessKit.setup(
+            true,
+            object : ProcessLogback {
+                override fun log(s: String) {
+                    println(s)
+                }
+
+                override fun output(s: String, error: Boolean) {
+                    println("> $s")
+                }
+            },
+        )
+
+        val ret = ProcessKit.run("git status")
+        println("ret = $ret")
+    }
+
 
     @Test
     fun test() {
