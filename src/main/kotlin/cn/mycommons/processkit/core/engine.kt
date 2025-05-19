@@ -77,7 +77,7 @@ internal class RealProcessResult : ProcessResult {
 
     private fun myString(list: List<String>): String {
         return """ProcessResult(exitValue=$exitValue, lines=${lines.size})
-        |'${all.joinToString("\n")}'
+        |'${list.joinToString("\n")}'
         """.trimMargin()
     }
 }
