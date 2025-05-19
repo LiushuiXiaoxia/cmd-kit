@@ -63,7 +63,7 @@ internal class RealProcessResult : ProcessResult {
         if (all.size > 200) {
             val list = mutableListOf<String>().apply {
                 addAll(all.take(20))
-                add("~~~~~~~~~~~")
+                add("........")
                 addAll(all.takeLast(20))
             }
             return myString(list)
@@ -93,7 +93,7 @@ class ProcessEngine(val req: RealProcessReq) {
     }
 
     fun exec(): ProcessResult {
-        req.currentLog.log("run process: cmdList =  [${req.cmdList}], workspace = ${req.workspace}")
+        req.currentLog.log("run process: cmdList =  ${req.cmdList}, workspace = ${req.workspace}")
         val p = create()
         return result(p)
     }
@@ -138,9 +138,13 @@ class ProcessEngine(val req: RealProcessReq) {
             } else {
                 count.await()
             }
+        }.onSuccess {
+            req.currentLog.log("run process: cmdList =  ${req.cmdList}, exitValue = ${result.exitValue}")
         }.onFailure {
             result.exitValue = -1
             result.e = it
+
+            req.currentLog.log("run process: cmdList =  ${req.cmdList}, exitValue = ${result.exitValue}")
         }
 
         return result

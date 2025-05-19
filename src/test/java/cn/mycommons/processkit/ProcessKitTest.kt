@@ -7,7 +7,7 @@ class ProcessKitTest {
     @Test
     fun setup() {
         ProcessKit.setup(
-            true,
+            false,
             object : ProcessLogback {
                 override fun log(s: String) {
                     println(s)
