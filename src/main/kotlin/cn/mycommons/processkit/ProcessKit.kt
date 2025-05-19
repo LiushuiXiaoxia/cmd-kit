@@ -33,7 +33,7 @@ object ProcessKit {
     }
 
     /**
-     * 执行，不输出，返回结果, 默认会检测直结果
+     * 执行，不输出，返回结果, 默认不会检测结果
      */
     @JvmStatic
     fun call(
@@ -83,7 +83,7 @@ object ProcessKit {
      */
     @JvmStatic
     fun newProcess(cmdList: List<String>, workspace: File? = null): ProcessReq {
-        return RealProcessReq(cmdList = cmdList, workspace = workspace,)
+        return RealProcessReq(cmdList = cmdList, workspace = workspace)
     }
 
     /**

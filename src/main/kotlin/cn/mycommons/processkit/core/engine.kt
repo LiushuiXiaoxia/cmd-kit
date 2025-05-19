@@ -1,9 +1,12 @@
 package cn.mycommons.processkit.core
 
-import cn.mycommons.processkit.*
+import cn.mycommons.processkit.ProcessExecException
+import cn.mycommons.processkit.ProcessLogback
+import cn.mycommons.processkit.ProcessReq
+import cn.mycommons.processkit.ProcessResult
 import java.io.File
 import java.time.LocalDateTime
-import java.util.ArrayList
+import java.util.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -101,22 +104,19 @@ class ProcessEngine(val req: RealProcessReq) {
     fun result(p: Process): ProcessResult {
         val name = req.cmdList.firstOrNull() ?: "process"
         val result = RealProcessResult()
-        val count = CountDownLatch(2)
 
         thread(name = "$name-${System.currentTimeMillis()}") {
-            p.inputStream.bufferedReader().readLines().forEach {
+            p.inputStream.bufferedReader().lines().forEach {
                 result.addLine(it, false)
                 req.currentLog.output(it, false)
             }
-            count.countDown()
         }
         thread(name = "$name-${System.currentTimeMillis()}") {
             Thread.sleep(10)
-            p.errorStream.bufferedReader().readLines().forEach {
+            p.errorStream.bufferedReader().lines().forEach {
                 result.addLine(it, true)
                 req.currentLog.output(it, true)
             }
-            count.countDown()
         }
 
         kotlin.runCatching {
@@ -126,17 +126,16 @@ class ProcessEngine(val req: RealProcessReq) {
                 p.waitFor()
             }
 
-            //如果命令未执行完成,则将ex设置错误属性
             if (p.isAlive) {
                 // result.addLine("命令未执行结束已中断", true)
-                result.exitValue = -1
+                p.destroy()
+                result.exitValue = p.exitValue()
+                val ret = p.waitFor(2, TimeUnit.SECONDS)
+                if (!ret) {
+                    p.destroyForcibly()
+                }
             } else {
                 result.exitValue = p.exitValue()
-            }
-            if (req.timeout > 0) {
-                count.await(req.timeout, TimeUnit.SECONDS)
-            } else {
-                count.await()
             }
         }.onSuccess {
             req.currentLog.log("run process: cmdList =  ${req.cmdList}, exitValue = ${result.exitValue}")
@@ -156,7 +155,14 @@ internal fun String.asBashCmd(): List<String> {
 }
 
 internal fun List<String>.asBashCmd(): List<String> {
-    val list = mutableListOf("/bin/bash", "-c")
+    val os = System.getProperty("os.name").lowercase()
+    val list = if (os.contains("win")) {
+        // Windows 系统
+        mutableListOf("cmd.exe", "/c")
+    } else {
+        // macOS 或 Linux 系统
+        mutableListOf("/bin/bash", "-c")
+    }
     list.addAll(this)
     return list
 }

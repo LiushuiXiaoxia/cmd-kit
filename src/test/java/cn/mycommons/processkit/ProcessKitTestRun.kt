@@ -6,7 +6,6 @@ import java.io.File
 
 class ProcessKitTestRun {
 
-
     @Test
     fun testSuccess() {
         println("before testSuccess")
@@ -54,5 +53,11 @@ class ProcessKitTestRun {
         val ret = ProcessKit.run(cmd2)
         Assert.assertEquals(ret, 0)
         Assert.assertEquals(f.exists(), false)
+    }
+
+    @Test
+    fun testShell2() {
+        val cmd = "cd ~; ls -lh"
+        ProcessKit.run(cmd)
     }
 }
