@@ -1,6 +1,6 @@
-package cn.mycommons.processkit.core
+package com.github.liushuixiaoxia.processkit.core
 
-import cn.mycommons.processkit.ProcessLogback
+import com.github.liushuixiaoxia.processkit.ProcessLogback
 
 internal object Global {
 

@@ -1,6 +1,6 @@
-package cn.mycommons.processkit
+package com.github.liushuixiaoxia.processkit
 
-import cn.mycommons.processkit.core.RealProcessResult
+import com.github.liushuixiaoxia.processkit.core.RealProcessResult
 import java.io.File
 
 interface ProcessLogback {

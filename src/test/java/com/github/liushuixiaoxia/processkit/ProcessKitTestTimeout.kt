@@ -1,4 +1,4 @@
-package cn.mycommons.processkit
+package com.github.liushuixiaoxia.processkit
 
 import org.testng.Assert
 import org.testng.annotations.Test

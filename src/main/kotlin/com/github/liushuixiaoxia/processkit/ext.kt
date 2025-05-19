@@ -1,11 +1,11 @@
-package cn.mycommons.processkit
+package com.github.liushuixiaoxia.processkit
 
 
 /**
  * 获取pid
  */
 fun Process.reflectPid(): Long {
-    return kotlin.runCatching {
+    return runCatching {
         pid()
     }.getOrElse {
         val pid = javaClass.getDeclaredField("pid")

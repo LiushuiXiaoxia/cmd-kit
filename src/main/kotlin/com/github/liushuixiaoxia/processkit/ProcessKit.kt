@@ -1,8 +1,8 @@
-package cn.mycommons.processkit
+package com.github.liushuixiaoxia.processkit
 
-import cn.mycommons.processkit.core.Global
-import cn.mycommons.processkit.core.ProcessEngine
-import cn.mycommons.processkit.core.RealProcessReq
+import com.github.liushuixiaoxia.processkit.core.Global
+import com.github.liushuixiaoxia.processkit.core.ProcessEngine
+import com.github.liushuixiaoxia.processkit.core.RealProcessReq
 import java.io.File
 
 object ProcessKit {

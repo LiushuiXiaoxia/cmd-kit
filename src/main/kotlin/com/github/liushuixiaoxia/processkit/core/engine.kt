@@ -1,13 +1,12 @@
-package cn.mycommons.processkit.core
+package com.github.liushuixiaoxia.processkit.core
 
-import cn.mycommons.processkit.ProcessExecException
-import cn.mycommons.processkit.ProcessLogback
-import cn.mycommons.processkit.ProcessReq
-import cn.mycommons.processkit.ProcessResult
+import com.github.liushuixiaoxia.processkit.ProcessExecException
+import com.github.liushuixiaoxia.processkit.ProcessLogback
+import com.github.liushuixiaoxia.processkit.ProcessReq
+import com.github.liushuixiaoxia.processkit.ProcessResult
 import java.io.File
 import java.time.LocalDateTime
 import java.util.*
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
@@ -119,7 +118,7 @@ class ProcessEngine(val req: RealProcessReq) {
             }
         }
 
-        kotlin.runCatching {
+        runCatching {
             if (req.timeout > 0) {
                 p.waitFor(req.timeout, TimeUnit.SECONDS)
             } else {
