@@ -13,10 +13,10 @@ object ProcessKit {
     @JvmStatic
     fun setup(
         logEnable: Boolean,
-        processLogback: ProcessLogback?,
+        logback: ProcessLogback? = null,
         timeout: Long = Global.DEFAULT_TIMEOUT,
     ) {
-        Global.setup(logEnable, processLogback, timeout)
+        Global.setup(logEnable, logback, timeout)
     }
 
     /**
@@ -58,6 +58,7 @@ object ProcessKit {
      * 最原始的方法，低级方法，需要指定详细参数
      */
     @JvmStatic
+    @JvmOverloads
     fun exec(
         cmd: String,
         ws: File?,

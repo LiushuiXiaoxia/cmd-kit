@@ -24,7 +24,7 @@ class RealProcessReq(
 
     val currentLog: ProcessLogback by lazy {
         if (logEnable) {
-            processLogback ?: Global.processLogback ?: EmptyLogback()
+            processLogback ?: Global.logback ?: EmptyLogback()
         } else {
             EmptyLogback()
         }
