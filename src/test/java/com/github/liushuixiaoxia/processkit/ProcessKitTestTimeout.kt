@@ -39,7 +39,6 @@ class ProcessKitTestTimeout {
         val ret = ProcessKit.run("bash ${f.absolutePath}", timeout = 3)
         println("ret = $ret")
         Assert.assertNotEquals(ret, 0)
-
     }
 
     @Test(expectedExceptions = [ProcessExecException::class])
@@ -49,5 +48,19 @@ class ProcessKitTestTimeout {
         }.onFailure {
             it.printStackTrace()
         }.getOrThrow()
+    }
+
+    @Test
+    fun testCallback() {
+        ProcessKit.setup(false, null)
+        ProcessKit.run("bash ${f.absolutePath}", callback = object : ProcessCallback {
+            override fun onReceive(line: ResultLine) {
+                println("> ${line.time} ${line.msg}")
+            }
+
+            override fun onComplete(result: ProcessResult) {
+                println("result = $result")
+            }
+        })
     }
 }

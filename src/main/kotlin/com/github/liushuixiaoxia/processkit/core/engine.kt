@@ -1,11 +1,12 @@
 package com.github.liushuixiaoxia.processkit.core
 
+import com.github.liushuixiaoxia.processkit.ProcessCallback
 import com.github.liushuixiaoxia.processkit.ProcessExecException
 import com.github.liushuixiaoxia.processkit.ProcessLogback
 import com.github.liushuixiaoxia.processkit.ProcessReq
 import com.github.liushuixiaoxia.processkit.ProcessResult
+import com.github.liushuixiaoxia.processkit.ResultLine
 import java.io.File
-import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -18,20 +19,16 @@ class RealProcessReq(
     override var timeout: Long = Global.timeout,
     override var logEnable: Boolean = true,
     override var processLogback: ProcessLogback? = null,
+    override var processCallback: ProcessCallback? = null,
 ) : ProcessReq {
 
     val currentLog: ProcessLogback by lazy {
         if (logEnable) {
-            processLogback ?: Global.processLogback
+            processLogback ?: Global.processLogback ?: EmptyLogback()
         } else {
             EmptyLogback()
         }
     }
-}
-
-internal data class ResultLine(val line: String, val error: Boolean = false) {
-
-    val time = LocalDateTime.now()
 }
 
 internal class RealProcessResult : ProcessResult {
@@ -42,16 +39,18 @@ internal class RealProcessResult : ProcessResult {
 
     private val lines: MutableList<ResultLine> = mutableListOf()
 
-    override val all: List<String> by lazy { lines.map { it.line }.toList() }
-    override val text: String by lazy { lines.filter { !it.error }.joinToString("\n") { it.line } }
-    override val error: String by lazy { lines.filter { it.error }.joinToString("\n") { it.line } }
+    override val all: List<String> by lazy { lines.map { it.msg }.toList() }
+    override val text: String by lazy { lines.filter { !it.error }.joinToString("\n") { it.msg } }
+    override val error: String by lazy { lines.filter { it.error }.joinToString("\n") { it.msg } }
 
     fun allResultLines(): List<ResultLine> = ArrayList(lines)
 
-    fun addLine(text: String, error: Boolean = false) {
+    fun addLine(text: String, error: Boolean = false): ResultLine {
+        val line = ResultLine(text, error)
         synchronized(lines) {
-            lines.add(ResultLine(text, error))
+            lines.add(line)
         }
+        return line
     }
 
     override fun check(errorMessage: String): ProcessResult {
@@ -106,14 +105,16 @@ class ProcessEngine(val req: RealProcessReq) {
 
         thread(name = "$name-${System.currentTimeMillis()}") {
             p.inputStream.bufferedReader().lines().forEach {
-                result.addLine(it, false)
+                val line = result.addLine(it, false)
+                req.processCallback?.onReceive(line)
                 req.currentLog.output(it, false)
             }
         }
         thread(name = "$name-${System.currentTimeMillis()}") {
             Thread.sleep(10)
             p.errorStream.bufferedReader().lines().forEach {
-                result.addLine(it, true)
+                val line = result.addLine(it, true)
+                req.processCallback?.onReceive(line)
                 req.currentLog.output(it, true)
             }
         }
@@ -144,6 +145,7 @@ class ProcessEngine(val req: RealProcessReq) {
 
             req.currentLog.log("run process: cmdList =  ${req.cmdList}, exitValue = ${result.exitValue}")
         }
+        req.processCallback?.onComplete(result)
 
         return result
     }

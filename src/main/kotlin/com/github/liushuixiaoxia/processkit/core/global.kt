@@ -10,9 +10,9 @@ internal object Global {
 
     var timeout = -1L
 
-    var processLogback: ProcessLogback = DefaultLogback(logEnable)
+    var processLogback: ProcessLogback? = DefaultLogback(logEnable)
 
-    fun setup(logEnable: Boolean, processLogback: ProcessLogback, timeout: Long = DEFAULT_TIMEOUT) {
+    fun setup(logEnable: Boolean, processLogback: ProcessLogback?, timeout: Long = DEFAULT_TIMEOUT) {
         Global.logEnable = logEnable
         Global.processLogback = processLogback
         Global.timeout = timeout

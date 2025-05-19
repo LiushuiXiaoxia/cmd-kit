@@ -13,7 +13,7 @@ object ProcessKit {
     @JvmStatic
     fun setup(
         logEnable: Boolean,
-        processLogback: ProcessLogback,
+        processLogback: ProcessLogback?,
         timeout: Long = Global.DEFAULT_TIMEOUT,
     ) {
         Global.setup(logEnable, processLogback, timeout)
@@ -23,27 +23,31 @@ object ProcessKit {
      * 仅执行，默认输出，忽略错误，返回结果码
      */
     @JvmStatic
+    @JvmOverloads
     fun run(
         cmd: String,
         ws: File? = null,
         timeout: Long = Global.DEFAULT_TIMEOUT,
         env: Map<String, String>? = null,
+        callback: ProcessCallback? = null,
     ): Int {
-        return exec(cmd, ws, true, timeout, env).exitValue
+        return exec(cmd, ws, true, timeout, env, callback).exitValue
     }
 
     /**
      * 执行，不输出，返回结果, 默认不会检测结果
      */
     @JvmStatic
+    @JvmOverloads
     fun call(
         cmd: String,
         ws: File? = null,
         timeout: Long = Global.DEFAULT_TIMEOUT,
         env: Map<String, String>? = null,
         check: Boolean = false,
+        callback: ProcessCallback? = null,
     ): ProcessResult {
-        return exec(cmd, ws, false, timeout, env).apply {
+        return exec(cmd, ws, false, timeout, env, callback).apply {
             if (check) {
                 check("call $cmd failed")
             }
@@ -60,22 +64,16 @@ object ProcessKit {
         output: Boolean,
         timeout: Long = Global.DEFAULT_TIMEOUT,
         env: Map<String, String>? = null,
+        callback: ProcessCallback? = null,
     ): ProcessResult {
         val req = newProcess(listOf(cmd), ws)
         (req as RealProcessReq).also {
             it.logEnable = output
             it.timeout = timeout
             it.env = env
+            it.processCallback = callback
         }
         return exec(req)
-    }
-
-    /**
-     * 执行
-     */
-    @JvmStatic
-    fun exec(req: ProcessReq): ProcessResult {
-        return ProcessEngine(req as RealProcessReq).exec()
     }
 
     /**
@@ -84,6 +82,14 @@ object ProcessKit {
     @JvmStatic
     fun newProcess(cmdList: List<String>, workspace: File? = null): ProcessReq {
         return RealProcessReq(cmdList = cmdList, workspace = workspace)
+    }
+
+    /**
+     * 执行
+     */
+    @JvmStatic
+    fun exec(req: ProcessReq): ProcessResult {
+        return ProcessEngine(req as RealProcessReq).exec()
     }
 
     /**

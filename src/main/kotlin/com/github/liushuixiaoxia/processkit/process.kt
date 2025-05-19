@@ -2,6 +2,7 @@ package com.github.liushuixiaoxia.processkit
 
 import com.github.liushuixiaoxia.processkit.core.RealProcessResult
 import java.io.File
+import java.time.LocalDateTime
 
 interface ProcessLogback {
     /**
@@ -13,6 +14,13 @@ interface ProcessLogback {
      * 执行日志
      */
     fun output(s: String, error: Boolean)
+}
+
+interface ProcessCallback {
+
+    fun onReceive(line: ResultLine)
+
+    fun onComplete(result: ProcessResult)
 }
 
 /**
@@ -50,6 +58,11 @@ interface ProcessReq {
      * 日志输出回调
      */
     var processLogback: ProcessLogback?
+
+    /**
+     * 执行回调
+     */
+    var processCallback: ProcessCallback?
 }
 
 /**
@@ -94,6 +107,15 @@ interface ProcessResult {
     @Throws(ProcessExecException::class)
     fun check(errorMessage: String): ProcessResult
 }
+
+/**
+ * 输出行信息
+ */
+data class ResultLine(
+    val msg: String,
+    val error: Boolean = false,
+    val time: LocalDateTime = LocalDateTime.now(),
+)
 
 /**
  * 更友好的输出结果，一般用于日志调试
