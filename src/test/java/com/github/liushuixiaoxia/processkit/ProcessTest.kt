@@ -15,7 +15,7 @@ class ProcessTest {
 
     @Test
     fun testExample() {
-        val tmp = File("tmp", "t-${System.currentTimeMillis()}").canonicalFile
+        val tmp = File("build/tmp", "t-${System.currentTimeMillis()}").canonicalFile
         println("tmp = $tmp")
         ProcessKit.call("mkdir -p $tmp").check("make dir fail")
         ProcessKit.call("git clone git@github.com:LiushuiXiaoxia/process-kit.git $tmp").check("git check failed")
