@@ -45,7 +45,7 @@ publishing {
             pom {
                 name.set("process-kit") // 项目名称
                 description.set("kotlin/java call process kit")
-                url.set("https://github.com/yourusername/yourproject")
+                url.set("https://github.com/LiushuiXiaoxia/process-kit")
 
                 licenses {
                     license {
