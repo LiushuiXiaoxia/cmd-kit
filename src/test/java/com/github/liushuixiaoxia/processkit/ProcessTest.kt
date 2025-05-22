@@ -23,6 +23,20 @@ class ProcessTest {
         ProcessKit.run("cd $tmp && ./gradlew clean assemble")
         ProcessKit.run("rm -rf $tmp")
 
-        println("tmp = ${tmp.exists()}")
+        println("$tmp exists = ${tmp.exists()}")
+    }
+
+    @Test
+    fun testExample2() {
+        val tmp = File("build/tmp", "t-${System.currentTimeMillis()}").canonicalFile
+        println("tmp = $tmp")
+        callCmd("mkdir -p $tmp").check("make dir fail")
+        callCmd("git clone git@github.com:LiushuiXiaoxia/process-kit.git $tmp").check("git check failed")
+        runCmd("cd $tmp && git status && git log -5")
+        runCmd("cd $tmp && ./gradlew clean assemble")
+        runCmd("rm -rf $tmp")
+        runCmd("ls -lh")
+
+        println("$tmp exists = ${tmp.exists()}")
     }
 }

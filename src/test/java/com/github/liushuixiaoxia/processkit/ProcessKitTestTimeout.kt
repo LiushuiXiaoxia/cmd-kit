@@ -50,6 +50,11 @@ class ProcessKitTestTimeout {
         }.getOrThrow()
     }
 
+    @Test(expectedExceptions = [ProcessExecException::class])
+    fun testTimeout3() {
+        callCmd("bash ${f.absolutePath}").check("timeout")
+    }
+
     @Test
     fun testCallback() {
         ProcessKit.setup(false, null)
