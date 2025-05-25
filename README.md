@@ -4,6 +4,8 @@
 
 工作中经常需要调用 `shell` 命令，参考 `python` 的 `subprocess`, 使用 `kotlin` 简单包了一层，支持 `java/kotlin`, `mac/linux` 使用。
 
+[![Java CI with Gradle](https://github.com/LiushuiXiaoxia/process-kit/actions/workflows/gradle.yml/badge.svg)](https://github.com/LiushuiXiaoxia/process-kit/actions/workflows/gradle.yml)
+
 # 使用方法
 
 [![](https://jitpack.io/v/LiushuiXiaoxia/process-kit.svg)](https://jitpack.io/#LiushuiXiaoxia/process-kit)
