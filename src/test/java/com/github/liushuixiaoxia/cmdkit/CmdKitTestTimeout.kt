@@ -52,7 +52,10 @@ class CmdKitTestTimeout {
 
     @Test(expectedExceptions = [CmdExecException::class])
     fun testTimeout3() {
-        callCmd("bash ${f.absolutePath}").check("timeout")
+        callCmd("bash ${f.absolutePath}") {
+            timeout = 3
+            checkResult("timeout")
+        }
     }
 
     @Test
