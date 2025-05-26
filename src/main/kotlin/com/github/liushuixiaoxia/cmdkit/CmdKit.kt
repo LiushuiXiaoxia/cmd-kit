@@ -1,11 +1,11 @@
-package com.github.liushuixiaoxia.processkit
+package com.github.liushuixiaoxia.cmdkit
 
-import com.github.liushuixiaoxia.processkit.core.Global
-import com.github.liushuixiaoxia.processkit.core.ProcessEngine
-import com.github.liushuixiaoxia.processkit.core.RealProcessReq
+import com.github.liushuixiaoxia.cmdkit.core.Global
+import com.github.liushuixiaoxia.cmdkit.core.CmdEngine
+import com.github.liushuixiaoxia.cmdkit.core.RealCmdReq
 import java.io.File
 
-object ProcessKit {
+object CmdKit {
 
     /**
      * 配置全局属性
@@ -13,7 +13,7 @@ object ProcessKit {
     @JvmStatic
     fun setup(
         logEnable: Boolean,
-        logback: ProcessLogback? = null,
+        logback: CmdLogback? = null,
         timeout: Long = Global.DEFAULT_TIMEOUT,
     ) {
         Global.setup(logEnable, logback, timeout)
@@ -29,7 +29,7 @@ object ProcessKit {
         ws: File? = null,
         timeout: Long = Global.DEFAULT_TIMEOUT,
         env: Map<String, String>? = null,
-        callback: ProcessCallback? = null,
+        callback: CmdCallback? = null,
     ): Int {
         return exec(cmd, ws, true, timeout, env, callback).exitValue
     }
@@ -45,8 +45,8 @@ object ProcessKit {
         timeout: Long = Global.DEFAULT_TIMEOUT,
         env: Map<String, String>? = null,
         check: Boolean = false,
-        callback: ProcessCallback? = null,
-    ): ProcessResult {
+        callback: CmdCallback? = null,
+    ): CmdResult {
         return exec(cmd, ws, false, timeout, env, callback).apply {
             if (check) {
                 check("call $cmd failed")
@@ -65,14 +65,14 @@ object ProcessKit {
         output: Boolean,
         timeout: Long = Global.DEFAULT_TIMEOUT,
         env: Map<String, String>? = null,
-        callback: ProcessCallback? = null,
-    ): ProcessResult {
-        val req = newProcess(listOf(cmd), ws)
-        (req as RealProcessReq).also {
+        callback: CmdCallback? = null,
+    ): CmdResult {
+        val req = newCmd(listOf(cmd), ws)
+        (req as RealCmdReq).also {
             it.logEnable = output
             it.timeout = timeout
             it.env = env
-            it.processCallback = callback
+            it.cmdCallback = callback
         }
         return exec(req)
     }
@@ -81,25 +81,25 @@ object ProcessKit {
      * 手动创建执行，可详细自定义参数
      */
     @JvmStatic
-    fun newProcess(cmdList: List<String>, workspace: File? = null): ProcessReq {
-        return RealProcessReq(cmdList = cmdList, workspace = workspace)
+    fun newCmd(cmdList: List<String>, workspace: File? = null): CmdReq {
+        return RealCmdReq(cmdList = cmdList, workspace = workspace)
     }
 
     /**
      * 执行
      */
     @JvmStatic
-    fun exec(req: ProcessReq): ProcessResult {
-        return ProcessEngine(req as RealProcessReq).exec()
+    fun exec(req: CmdReq): CmdResult {
+        return CmdEngine(req as RealCmdReq).exec()
     }
 
     /**
      * 获取已有进程执行的结果
      */
     @JvmStatic
-    fun result(p: Process, output: Boolean = false): ProcessResult {
-        val req = newProcess(listOf(), null)
+    fun result(p: Process, output: Boolean = false): CmdResult {
+        val req = newCmd(listOf(), null)
         req.logEnable = output
-        return ProcessEngine(req as RealProcessReq).result(p)
+        return CmdEngine(req as RealCmdReq).result(p)
     }
 }

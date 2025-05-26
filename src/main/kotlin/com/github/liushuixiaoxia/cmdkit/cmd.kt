@@ -1,10 +1,10 @@
-package com.github.liushuixiaoxia.processkit
+package com.github.liushuixiaoxia.cmdkit
 
-import com.github.liushuixiaoxia.processkit.core.RealProcessResult
+import com.github.liushuixiaoxia.cmdkit.core.RealCmdResult
 import java.io.File
 import java.time.LocalDateTime
 
-interface ProcessLogback {
+interface CmdLogback {
     /**
      * 带调试信息的日志, 非执行日志
      */
@@ -16,19 +16,19 @@ interface ProcessLogback {
     fun output(s: String, error: Boolean)
 }
 
-interface ProcessCallback {
+interface CmdCallback {
 
     fun onReceive(line: ResultLine)
 
-    fun onComplete(result: ProcessResult)
+    fun onComplete(result: CmdResult)
 }
 
 /**
  * 执行异常
  */
-class ProcessExecException(msg: String, e: Throwable? = null) : RuntimeException(msg, e)
+class CmdExecException(msg: String, e: Throwable? = null) : RuntimeException(msg, e)
 
-interface ProcessReq {
+interface CmdReq {
     /**
      * 执行命令
      */
@@ -57,22 +57,22 @@ interface ProcessReq {
     /**
      * 日志输出回调
      */
-    var processLogback: ProcessLogback?
+    var cmdLogback: CmdLogback?
 
     /**
      * 执行回调
      */
-    var processCallback: ProcessCallback?
+    var cmdCallback: CmdCallback?
 }
 
 /**
  * 获取结果
  */
-fun ProcessReq.exec(): ProcessResult {
-    return ProcessKit.exec(this)
+fun CmdReq.exec(): CmdResult {
+    return CmdKit.exec(this)
 }
 
-interface ProcessResult {
+interface CmdResult {
 
     /**
      * 结果返回码
@@ -104,8 +104,8 @@ interface ProcessResult {
     /**
      * 检测是否成功，否则会抛出异常
      */
-    @Throws(ProcessExecException::class)
-    fun check(errorMessage: String): ProcessResult
+    @Throws(CmdExecException::class)
+    fun check(errorMessage: String): CmdResult
 }
 
 /**
@@ -120,7 +120,7 @@ data class ResultLine(
 /**
  * 更友好的输出结果，一般用于日志调试
  */
-fun ProcessResult.display(): String {
-    val r = this as RealProcessResult
+fun CmdResult.display(): String {
+    val r = this as RealCmdResult
     return r.display()
 }

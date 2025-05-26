@@ -1,11 +1,11 @@
-package com.github.liushuixiaoxia.processkit
+package com.github.liushuixiaoxia.cmdkit
 
 import org.testng.annotations.Test
 import java.io.File
 
-class ProcessDslTest {
+class CmdDslTest {
 
-    @Test(expectedExceptions = [ProcessExecException::class])
+    @Test(expectedExceptions = [CmdExecException::class])
     fun testDsl() {
         runCmd("exit 1") {
             checkResult("cmd run fail")

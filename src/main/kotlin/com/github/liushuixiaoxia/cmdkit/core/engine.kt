@@ -1,37 +1,37 @@
-package com.github.liushuixiaoxia.processkit.core
+package com.github.liushuixiaoxia.cmdkit.core
 
-import com.github.liushuixiaoxia.processkit.ProcessCallback
-import com.github.liushuixiaoxia.processkit.ProcessExecException
-import com.github.liushuixiaoxia.processkit.ProcessLogback
-import com.github.liushuixiaoxia.processkit.ProcessReq
-import com.github.liushuixiaoxia.processkit.ProcessResult
-import com.github.liushuixiaoxia.processkit.ResultLine
+import com.github.liushuixiaoxia.cmdkit.CmdCallback
+import com.github.liushuixiaoxia.cmdkit.CmdExecException
+import com.github.liushuixiaoxia.cmdkit.CmdLogback
+import com.github.liushuixiaoxia.cmdkit.CmdReq
+import com.github.liushuixiaoxia.cmdkit.CmdResult
+import com.github.liushuixiaoxia.cmdkit.ResultLine
 import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 
-class RealProcessReq(
+class RealCmdReq(
     override val cmdList: List<String>,
     override val workspace: File? = null,
     override var env: Map<String, String>? = null,
     override var timeout: Long = Global.timeout,
     override var logEnable: Boolean = true,
-    override var processLogback: ProcessLogback? = null,
-    override var processCallback: ProcessCallback? = null,
-) : ProcessReq {
+    override var cmdLogback: CmdLogback? = null,
+    override var cmdCallback: CmdCallback? = null,
+) : CmdReq {
 
-    val currentLog: ProcessLogback by lazy {
+    val currentLog: CmdLogback by lazy {
         if (logEnable) {
-            processLogback ?: Global.logback ?: EmptyLogback()
+            cmdLogback ?: Global.logback ?: EmptyLogback()
         } else {
             EmptyLogback()
         }
     }
 }
 
-internal class RealProcessResult : ProcessResult {
+internal class RealCmdResult : CmdResult {
 
     override var exitValue = -1
 
@@ -53,11 +53,11 @@ internal class RealProcessResult : ProcessResult {
         return line
     }
 
-    override fun check(errorMessage: String): ProcessResult {
+    override fun check(errorMessage: String): CmdResult {
         if (isSuccess()) {
             return this
         }
-        throw ProcessExecException(errorMessage, e)
+        throw CmdExecException(errorMessage, e)
     }
 
     fun display(): String {
@@ -77,13 +77,13 @@ internal class RealProcessResult : ProcessResult {
     }
 
     private fun myString(list: List<String>): String {
-        return """ProcessResult(exitValue=$exitValue, lines=${lines.size})
+        return """CmdResult(exitValue=$exitValue, lines=${lines.size})
         |'${list.joinToString("\n")}'
         """.trimMargin()
     }
 }
 
-class ProcessEngine(val req: RealProcessReq) {
+class CmdEngine(val req: RealCmdReq) {
 
     private fun create(): Process {
         return ProcessBuilder(req.cmdList.asBashCmd())
@@ -93,20 +93,20 @@ class ProcessEngine(val req: RealProcessReq) {
             }.start()
     }
 
-    fun exec(): ProcessResult {
-        req.currentLog.log("run process: cmdList =  ${req.cmdList}, workspace = ${req.workspace}")
+    fun exec(): CmdResult {
+        req.currentLog.log("run cmd: cmdList =  ${req.cmdList}, workspace = ${req.workspace}")
         val p = create()
         return result(p)
     }
 
-    fun result(p: Process): ProcessResult {
-        val name = req.cmdList.firstOrNull() ?: "process"
-        val result = RealProcessResult()
+    fun result(p: Process): CmdResult {
+        val name = req.cmdList.firstOrNull() ?: "cmd-kit"
+        val result = RealCmdResult()
 
         thread(name = "$name-${System.currentTimeMillis()}") {
             p.inputStream.bufferedReader().lines().forEach {
                 val line = result.addLine(it, false)
-                req.processCallback?.onReceive(line)
+                req.cmdCallback?.onReceive(line)
                 req.currentLog.output(it, false)
             }
         }
@@ -114,7 +114,7 @@ class ProcessEngine(val req: RealProcessReq) {
             Thread.sleep(10)
             p.errorStream.bufferedReader().lines().forEach {
                 val line = result.addLine(it, true)
-                req.processCallback?.onReceive(line)
+                req.cmdCallback?.onReceive(line)
                 req.currentLog.output(it, true)
             }
         }
@@ -138,14 +138,14 @@ class ProcessEngine(val req: RealProcessReq) {
                 result.exitValue = p.exitValue()
             }
         }.onSuccess {
-            req.currentLog.log("run process: cmdList =  ${req.cmdList}, exitValue = ${result.exitValue}")
+            req.currentLog.log("run cmd: cmdList =  ${req.cmdList}, exitValue = ${result.exitValue}")
         }.onFailure {
             result.exitValue = -1
             result.e = it
 
-            req.currentLog.log("run process: cmdList =  ${req.cmdList}, exitValue = ${result.exitValue}")
+            req.currentLog.log("run cmd: cmdList =  ${req.cmdList}, exitValue = ${result.exitValue}")
         }
-        req.processCallback?.onComplete(result)
+        req.cmdCallback?.onComplete(result)
 
         return result
     }

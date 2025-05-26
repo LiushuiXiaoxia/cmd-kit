@@ -1,14 +1,14 @@
-package com.github.liushuixiaoxia.processkit
+package com.github.liushuixiaoxia.cmdkit
 
 import org.testng.annotations.Test
 
-class ProcessKitTest {
+class CmdKitTest {
 
     @Test
     fun setup() {
-        ProcessKit.setup(
+        CmdKit.setup(
             false,
-            object : ProcessLogback {
+            object : CmdLogback {
                 override fun log(s: String) {
                     println(s)
                 }
@@ -19,32 +19,32 @@ class ProcessKitTest {
             },
         )
 
-        val ret = ProcessKit.run("git status")
+        val ret = CmdKit.run("git status")
         println("ret = $ret")
     }
 
 
     @Test
     fun test() {
-        val r = ProcessKit.call("ls -alh")
+        val r = CmdKit.call("ls -alh")
         println("r = $r")
     }
 
     @Test
     fun test3() {
-        val r = ProcessKit.call("ls -alh")
+        val r = CmdKit.call("ls -alh")
         println(r.display())
     }
 
     @Test
     fun test4() {
-        val r = ProcessKit.call("ls -alh")
+        val r = CmdKit.call("ls -alh")
         r.all.forEach { println(it) }
     }
 
     @Test
     fun testCheck() {
-        val r = ProcessKit.call("ls -alh", ws = null)
+        val r = CmdKit.call("ls -alh", ws = null)
         r.check("ls fail")
     }
 }

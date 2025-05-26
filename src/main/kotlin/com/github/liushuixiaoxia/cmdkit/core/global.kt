@@ -1,6 +1,6 @@
-package com.github.liushuixiaoxia.processkit.core
+package com.github.liushuixiaoxia.cmdkit.core
 
-import com.github.liushuixiaoxia.processkit.ProcessLogback
+import com.github.liushuixiaoxia.cmdkit.CmdLogback
 
 internal object Global {
 
@@ -10,9 +10,9 @@ internal object Global {
 
     var timeout = -1L
 
-    var logback: ProcessLogback? = DefaultLogback(logEnable)
+    var logback: CmdLogback? = DefaultCmdLogback(logEnable)
 
-    fun setup(logEnable: Boolean, logback: ProcessLogback?, timeout: Long = DEFAULT_TIMEOUT) {
+    fun setup(logEnable: Boolean, logback: CmdLogback?, timeout: Long = DEFAULT_TIMEOUT) {
         Global.logEnable = logEnable
         Global.logback = logback
         Global.timeout = timeout
@@ -20,7 +20,7 @@ internal object Global {
 }
 
 
-internal class EmptyLogback() : ProcessLogback {
+internal class EmptyLogback() : CmdLogback {
     override fun log(s: String) {
 
     }
@@ -29,7 +29,8 @@ internal class EmptyLogback() : ProcessLogback {
     }
 }
 
-internal class DefaultLogback(private val logEnable: Boolean) : ProcessLogback {
+internal class DefaultCmdLogback(private val logEnable: Boolean) : CmdLogback {
+
     override fun log(s: String) {
         // println(s)
     }

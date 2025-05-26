@@ -1,10 +1,10 @@
-package com.github.liushuixiaoxia.processkit
+package com.github.liushuixiaoxia.cmdkit
 
 import org.testng.Assert
 import org.testng.annotations.Test
 import java.io.File
 
-class ProcessKitTestTimeout {
+class CmdKitTestTimeout {
 
     val cmd = """
             echo "Hello World"
@@ -21,49 +21,49 @@ class ProcessKitTestTimeout {
         """.trimIndent()
 
     val f: File by lazy {
-        File.createTempFile("ProcessKitTestTimeoutTest", ".sh").apply { writeText(cmd) }
+        File.createTempFile("CmdKitTestTimeoutTest", ".sh").apply { writeText(cmd) }
     }
 
 
     @Test
     fun testLongExecute() {
-        val ret = ProcessKit.run("bash ${f.absolutePath}")
+        val ret = CmdKit.run("bash ${f.absolutePath}")
         println("ret = $ret")
 
-        val result = ProcessKit.call("bash ${f.absolutePath}")
+        val result = CmdKit.call("bash ${f.absolutePath}")
         println("result = $result")
     }
 
     @Test
     fun testTimeout() {
-        val ret = ProcessKit.run("bash ${f.absolutePath}", timeout = 3)
+        val ret = CmdKit.run("bash ${f.absolutePath}", timeout = 3)
         println("ret = $ret")
         Assert.assertNotEquals(ret, 0)
     }
 
-    @Test(expectedExceptions = [ProcessExecException::class])
+    @Test(expectedExceptions = [CmdExecException::class])
     fun testTimeout2() {
         runCatching {
-            ProcessKit.call("bash ${f.absolutePath}", timeout = 3).check("timeout")
+            CmdKit.call("bash ${f.absolutePath}", timeout = 3).check("timeout")
         }.onFailure {
             it.printStackTrace()
         }.getOrThrow()
     }
 
-    @Test(expectedExceptions = [ProcessExecException::class])
+    @Test(expectedExceptions = [CmdExecException::class])
     fun testTimeout3() {
         callCmd("bash ${f.absolutePath}").check("timeout")
     }
 
     @Test
     fun testCallback() {
-        ProcessKit.setup(false, null)
-        ProcessKit.run("bash ${f.absolutePath}", callback = object : ProcessCallback {
+        CmdKit.setup(false, null)
+        CmdKit.run("bash ${f.absolutePath}", callback = object : CmdCallback {
             override fun onReceive(line: ResultLine) {
                 println("> ${line.time} ${line.msg}")
             }
 
-            override fun onComplete(result: ProcessResult) {
+            override fun onComplete(result: CmdResult) {
                 println("result = $result")
             }
         })
