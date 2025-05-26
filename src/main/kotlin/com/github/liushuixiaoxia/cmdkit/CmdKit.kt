@@ -29,9 +29,10 @@ object CmdKit {
         ws: File? = null,
         timeout: Long = Global.DEFAULT_TIMEOUT,
         env: Map<String, String>? = null,
+        redirectError: Boolean = false,
         callback: CmdCallback? = null,
     ): Int {
-        return exec(cmd, ws, true, timeout, env, callback).exitValue
+        return exec(cmd, ws, true, timeout, env, redirectError, callback).exitValue
     }
 
     /**
@@ -45,9 +46,10 @@ object CmdKit {
         timeout: Long = Global.DEFAULT_TIMEOUT,
         env: Map<String, String>? = null,
         check: Boolean = false,
+        redirectError: Boolean = false,
         callback: CmdCallback? = null,
     ): CmdResult {
-        return exec(cmd, ws, false, timeout, env, callback).apply {
+        return exec(cmd, ws, false, timeout, env, redirectError, callback).apply {
             if (check) {
                 check("call $cmd failed")
             }
@@ -65,6 +67,7 @@ object CmdKit {
         output: Boolean,
         timeout: Long = Global.DEFAULT_TIMEOUT,
         env: Map<String, String>? = null,
+        redirectError: Boolean = false,
         callback: CmdCallback? = null,
     ): CmdResult {
         val req = newCmd(listOf(cmd), ws)
@@ -73,6 +76,7 @@ object CmdKit {
             it.timeout = timeout
             it.env = env
             it.cmdCallback = callback
+            it.redirectError = redirectError
         }
         return exec(req)
     }
