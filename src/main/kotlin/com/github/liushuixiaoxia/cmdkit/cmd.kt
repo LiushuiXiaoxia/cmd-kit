@@ -63,6 +63,11 @@ interface CmdReq {
      * 执行回调
      */
     var cmdCallback: CmdCallback?
+
+    /**
+     * 合并标准错误和标准输出
+     */
+    var redirectError: Boolean
 }
 
 /**

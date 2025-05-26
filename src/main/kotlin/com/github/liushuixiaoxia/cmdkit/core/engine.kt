@@ -20,6 +20,7 @@ class RealCmdReq(
     override var logEnable: Boolean = true,
     override var cmdLogback: CmdLogback? = null,
     override var cmdCallback: CmdCallback? = null,
+    override var redirectError: Boolean = false,
 ) : CmdReq {
 
     val currentLog: CmdLogback by lazy {
@@ -90,6 +91,7 @@ class CmdEngine(val req: RealCmdReq) {
             .apply {
                 directory(req.workspace)
                 environment().putAll(req.env ?: emptyMap())
+                redirectErrorStream(req.redirectError)
             }.start()
     }
 
