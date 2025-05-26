@@ -18,7 +18,7 @@ class CmdTest {
         val tmp = File("build/tmp", "t-${System.currentTimeMillis()}").canonicalFile
         println("tmp = $tmp")
         CmdKit.call("mkdir -p $tmp").check("make dir fail")
-        CmdKit.call("git clone git@github.com:LiushuiXiaoxia/process-kit.git $tmp").check("git check failed")
+        CmdKit.call("git clone git@github.com:LiushuiXiaoxia/cmd-kit.git $tmp").check("git check failed")
         CmdKit.run("cd $tmp && git status && git log -5")
         CmdKit.run("cd $tmp && ./gradlew clean assemble")
         CmdKit.run("rm -rf $tmp")
@@ -31,7 +31,7 @@ class CmdTest {
         val tmp = File("build/tmp", "t-${System.currentTimeMillis()}").canonicalFile
         println("tmp = $tmp")
         callCmd("mkdir -p $tmp").check("make dir fail")
-        callCmd("git clone git@github.com:LiushuiXiaoxia/process-kit.git $tmp").check("git check failed")
+        callCmd("git clone git@github.com:LiushuiXiaoxia/cmd-kit.git $tmp").check("git check failed")
         runCmd("cd $tmp && git status && git log -5")
         runCmd("cd $tmp && ./gradlew clean assemble")
         runCmd("rm -rf $tmp")

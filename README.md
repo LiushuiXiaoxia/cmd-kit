@@ -1,14 +1,14 @@
-# ProcessKit
+# CmdKit
 
 ---
 
 工作中经常需要调用 `shell` 命令，参考 `python` 的 `subprocess`, 使用 `kotlin` 简单包了一层，支持 `java/kotlin`, `mac/linux` 使用。
 
-[![Java CI with Gradle](https://github.com/LiushuiXiaoxia/process-kit/actions/workflows/gradle.yml/badge.svg)](https://github.com/LiushuiXiaoxia/process-kit/actions/workflows/gradle.yml)
+[![Java CI with Gradle](https://github.com/LiushuiXiaoxia/cmd-kit/actions/workflows/gradle.yml/badge.svg)](https://github.com/LiushuiXiaoxia/cmd-kit/actions/workflows/gradle.yml)
 
 # 使用方法
 
-[![](https://jitpack.io/v/LiushuiXiaoxia/process-kit.svg)](https://jitpack.io/#LiushuiXiaoxia/process-kit)
+[![](https://jitpack.io/v/LiushuiXiaoxia/cmd-kit.svg)](https://jitpack.io/#LiushuiXiaoxia/cmd-kit)
 
 ```gradle
 repositories {
@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-        implementation("com.github.LiushuiXiaoxia:process-kit:$version")
+        implementation("com.github.LiushuiXiaoxia:cmd-kit:$version")
 }
 ```
 
@@ -31,7 +31,7 @@ dependencies {
 
 <dependency>
     <groupId>com.github.LiushuiXiaoxia</groupId>
-    <artifactId>process-kit</artifactId>
+    <artifactId>cmd-kit</artifactId>
     <version>${version}</version>
 </dependency>
 ```
@@ -44,7 +44,7 @@ dependencies {
 // 全局配置
 fun setup(
     logEnable: Boolean,
-    processLogback: ProcessLogback,
+    logback: CmdLogback,
     timeout: Long = Global.DEFAULT_TIMEOUT,
 ) {
 }
@@ -63,18 +63,18 @@ fun call(
     timeout: Long,
     env: Map<String, String>?,
     check: Boolean = false,
-): ProcessResult {
+): CmdResult {
 }
 ```
 
 ```kotlin
 val tmp = File("tmp", "t-${System.currentTimeMillis()}").canonicalFile
 println("tmp = $tmp")
-ProcessKit.call("mkdir -p $tmp").check("make dir fail")
-ProcessKit.call("git clone git@github.com:LiushuiXiaoxia/process-kit.git $tmp").check("git check failed")
-ProcessKit.run("cd $tmp && git status && git log -5")
-ProcessKit.run("cd $tmp && ./gradlew clean assemble")
-ProcessKit.run("rm -rf $tmp")
+CmdKit.call("mkdir -p $tmp").check("make dir fail")
+CmdKit.call("git clone git@github.com:LiushuiXiaoxia/cmd-kit.git $tmp").check("git check failed")
+CmdKit.run("cd $tmp && git status && git log -5")
+CmdKit.run("cd $tmp && ./gradlew clean assemble")
+CmdKit.run("rm -rf $tmp")
 println("tmp = ${tmp.exists()}")
 
 // dsl

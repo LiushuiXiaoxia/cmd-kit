@@ -43,9 +43,9 @@ publishing {
             from(components["java"])
 
             pom {
-                name.set("process-kit") // 项目名称
+                name.set("cmd-kit") // 项目名称
                 description.set("kotlin/java call process kit")
-                url.set("https://github.com/LiushuiXiaoxia/process-kit")
+                url.set("https://github.com/LiushuiXiaoxia/cmd-kit")
 
                 licenses {
                     license {
@@ -63,9 +63,9 @@ publishing {
                 }
 
                 scm {
-                    connection.set("scm:git:git://github.com/LiushuiXiaoxia/process-kit.git")
-                    developerConnection.set("scm:git:ssh://github.com/LiushuiXiaoxia/process-kit.git")
-                    url.set("https://github.com/LiushuiXiaoxia/process-kit")
+                    connection.set("scm:git:git://github.com/LiushuiXiaoxia/cmd-kit.git")
+                    developerConnection.set("scm:git:ssh://github.com/LiushuiXiaoxia/cmd-kit.git")
+                    url.set("https://github.com/LiushuiXiaoxia/cmd-kit")
                 }
             }
         }
