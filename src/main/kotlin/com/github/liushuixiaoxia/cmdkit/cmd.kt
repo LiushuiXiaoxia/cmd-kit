@@ -2,6 +2,7 @@ package com.github.liushuixiaoxia.cmdkit
 
 import com.github.liushuixiaoxia.cmdkit.core.RealCmdResult
 import java.io.File
+import java.time.Duration
 import java.time.LocalDateTime
 
 interface CmdLogback {
@@ -98,6 +99,11 @@ interface CmdResult {
      * err 输出
      */
     val error: String
+
+    /**
+     * 耗时
+     */
+    val duration: Duration
 
     /**
      * 是否成功

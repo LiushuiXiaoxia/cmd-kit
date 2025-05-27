@@ -6,7 +6,10 @@ import com.github.liushuixiaoxia.cmdkit.CmdLogback
 import com.github.liushuixiaoxia.cmdkit.CmdReq
 import com.github.liushuixiaoxia.cmdkit.CmdResult
 import com.github.liushuixiaoxia.cmdkit.ResultLine
+import com.github.liushuixiaoxia.cmdkit.core.Global.timeout
 import java.io.File
+import java.time.Duration
+import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -44,6 +47,10 @@ internal class RealCmdResult : CmdResult {
     override val text: String by lazy { lines.filter { !it.error }.joinToString("\n") { it.msg } }
     override val error: String by lazy { lines.filter { it.error }.joinToString("\n") { it.msg } }
 
+    var internalDuration: Duration = Duration.ZERO
+    override val duration: Duration
+        get() = internalDuration
+
     fun allResultLines(): List<ResultLine> = ArrayList(lines)
 
     fun addLine(text: String, error: Boolean = false): ResultLine {
@@ -59,6 +66,13 @@ internal class RealCmdResult : CmdResult {
             return this
         }
         throw CmdExecException(errorMessage, e)
+    }
+
+    private val begin = LocalDateTime.now()
+
+    fun setComplete() {
+        val end = LocalDateTime.now()
+        internalDuration = Duration.between(begin, end)
     }
 
     fun display(): String {
@@ -78,7 +92,7 @@ internal class RealCmdResult : CmdResult {
     }
 
     private fun myString(list: List<String>): String {
-        return """CmdResult(exitValue=$exitValue, lines=${lines.size})
+        return """CmdResult(exitValue=$exitValue, lines=${lines.size}, duration = $duration)
         |'${list.joinToString("\n")}'
         """.trimMargin()
     }
@@ -147,6 +161,7 @@ class CmdEngine(val req: RealCmdReq) {
 
             req.currentLog.log("run cmd: cmdList =  ${req.cmdList}, exitValue = ${result.exitValue}")
         }
+        result.setComplete()
         req.cmdCallback?.onComplete(result)
 
         return result
