@@ -25,4 +25,9 @@ class CmdDslTest {
 
         println("$tmp exists = ${tmp.exists()}")
     }
+
+    @Test
+    fun testDsl3() {
+        process("ls -alh").asCmdResult(true)
+    }
 }
