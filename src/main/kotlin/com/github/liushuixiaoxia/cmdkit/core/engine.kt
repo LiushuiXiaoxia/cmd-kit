@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 
-class RealCmdReq(
+internal class RealCmdReq(
     override val cmdList: List<String>,
     override val workspace: File? = null,
     override var env: Map<String, String>? = null,
@@ -91,9 +91,9 @@ internal class RealCmdResult : CmdResult {
     }
 }
 
-class CmdEngine(val req: RealCmdReq) {
+internal class CmdEngine(val req: RealCmdReq) {
 
-    private fun create(): Process {
+    internal fun create(): Process {
         return ProcessBuilder(req.cmdList.asBashCmd())
             .apply {
                 directory(req.workspace)
@@ -102,13 +102,13 @@ class CmdEngine(val req: RealCmdReq) {
             }.start()
     }
 
-    fun exec(): CmdResult {
+    internal fun exec(): CmdResult {
         req.currentLog.log("run cmd: cmdList =  ${req.cmdList}, workspace = ${req.workspace}")
         val p = create()
         return result(p)
     }
 
-    fun result(p: Process): CmdResult {
+    internal fun result(p: Process): CmdResult {
         val name = req.cmdList.firstOrNull() ?: "cmd-kit"
         val result = RealCmdResult()
 

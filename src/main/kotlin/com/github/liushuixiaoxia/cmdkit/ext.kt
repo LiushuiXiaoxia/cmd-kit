@@ -1,5 +1,7 @@
 package com.github.liushuixiaoxia.cmdkit
 
+import com.github.liushuixiaoxia.cmdkit.core.CmdEngine
+import com.github.liushuixiaoxia.cmdkit.core.RealCmdReq
 import java.io.File
 
 
@@ -54,4 +56,14 @@ fun callCmd(
     val req = CmdKit.newCmd(listOf(cmd), ws)
     block?.invoke(req)
     return CmdKit.exec(req)
+}
+
+fun process(
+    cmd: String,
+    ws: File? = null,
+    block: CmdBlock? = null,
+): Process {
+    val req = CmdKit.newCmd(listOf(cmd), ws)
+    block?.invoke(req)
+    return CmdEngine(req as RealCmdReq).create()
 }

@@ -75,10 +75,34 @@ object CmdKit {
             it.logEnable = output
             it.timeout = timeout
             it.env = env
-            it.cmdCallback = callback
             it.redirectError = redirectError
+            it.cmdCallback = callback
         }
         return exec(req)
+    }
+
+    /**
+     * 创建一个Process，不处理
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun process(
+        cmd: String,
+        ws: File? = null,
+        timeout: Long = Global.DEFAULT_TIMEOUT,
+        env: Map<String, String>? = null,
+        redirectError: Boolean = false,
+        // callback: CmdCallback? = null,
+    ): Process {
+        val req = newCmd(listOf(cmd), ws)
+        (req as RealCmdReq).also {
+            it.logEnable = false
+            it.timeout = timeout
+            it.env = env
+            it.redirectError = redirectError
+            // it.cmdCallback = callback
+        }
+        return CmdEngine(req as RealCmdReq).create()
     }
 
     /**

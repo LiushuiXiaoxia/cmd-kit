@@ -43,6 +43,13 @@ class CmdKitTest {
     }
 
     @Test
+    fun test5() {
+        val r = CmdKit.process("ls -alh")
+        r.inputStream.bufferedReader().forEachLine { println(it) }
+        println("r = ${r.waitFor()}")
+    }
+
+    @Test
     fun testCheck() {
         val r = CmdKit.call("ls -alh", ws = null)
         r.check("ls fail")

@@ -34,6 +34,14 @@ class CmdKitTestTimeout {
         println("result = $result")
     }
 
+
+    @Test
+    fun testLongExecute2() {
+        val r = CmdKit.process("bash ${f.absolutePath}", redirectError = true)
+        r.inputStream.bufferedReader().lines().forEach { println(it) }
+        println("r = ${r.waitFor()}")
+    }
+
     @Test
     fun testTimeout() {
         val ret = CmdKit.run("bash ${f.absolutePath}", timeout = 3)
