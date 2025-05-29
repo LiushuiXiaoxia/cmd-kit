@@ -1,6 +1,8 @@
 buildscript {
     repositories {
-        maven(url = "https://maven.aliyun.com/repository/public")
+        if (System.getProperty("os.name").lowercase().contains("mac")) {
+            maven(url = "https://maven.aliyun.com/repository/public")
+        }
         mavenCentral()
     }
 }
@@ -15,7 +17,9 @@ group = "com.github.LiushuiXiaoxia"
 version = "${project.properties["LIB_VERSION"]}"
 
 repositories {
-    maven(url = "https://maven.aliyun.com/repository/public")
+    if (System.getProperty("os.name").lowercase().contains("mac")) {
+        maven(url = "https://maven.aliyun.com/repository/public")
+    }
     mavenCentral()
 }
 
