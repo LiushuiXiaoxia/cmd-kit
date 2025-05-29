@@ -34,7 +34,7 @@ internal class RealCmdResult : CmdResult {
 
     var e: Throwable? = null
 
-    private val lines: MutableList<ResultLine> = mutableListOf()
+    internal val lines: MutableList<ResultLine> = mutableListOf()
 
     override val all: List<String> by lazy { lines.map { it.msg }.toList() }
     override val text: String by lazy { lines.filter { !it.error }.joinToString("\n") { it.msg } }
@@ -161,9 +161,9 @@ internal class CmdEngine(val req: RealCmdReq) {
     }
 }
 
-internal fun String.asBashCmd(): List<String> {
-    return listOf(this).asBashCmd()
-}
+//internal fun String.asBashCmd(): List<String> {
+//    return listOf(this).asBashCmd()
+//}
 
 internal fun List<String>.asBashCmd(): List<String> {
     val os = System.getProperty("os.name").lowercase()
