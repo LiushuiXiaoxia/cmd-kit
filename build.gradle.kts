@@ -1,21 +1,21 @@
 buildscript {
     repositories {
-        maven("https://maven.aliyun.com/repository/public")
+        maven(url = "https://maven.aliyun.com/repository/public")
         mavenCentral()
     }
 }
 
 plugins {
-    kotlin("jvm") version "2.1.20"
+    kotlin("jvm") version "2.1.21"
     `java-library`
     `maven-publish`
 }
 
 group = "com.github.LiushuiXiaoxia"
-version = project.properties["LIB_VERSION"].toString()
+version = "${project.properties["LIB_VERSION"]}"
 
 repositories {
-    maven("https://maven.aliyun.com/repository/public")
+    maven(url = "https://maven.aliyun.com/repository/public")
     mavenCentral()
 }
 
@@ -23,19 +23,21 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
-tasks.test {
-    useTestNG()
-}
-
 kotlin {
     jvmToolchain(11)
 }
 
 java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
     withSourcesJar()
     withJavadocJar()
 }
 
+tasks.test {
+    useTestNG()
+}
 
 publishing {
     publications {
