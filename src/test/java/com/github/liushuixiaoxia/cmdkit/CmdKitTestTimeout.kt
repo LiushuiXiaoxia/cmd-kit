@@ -1,7 +1,7 @@
 package com.github.liushuixiaoxia.cmdkit
 
-import org.testng.Assert
-import org.testng.annotations.Test
+import org.junit.Assert
+import org.junit.Test
 import java.io.File
 
 class CmdKitTestTimeout {
@@ -49,7 +49,7 @@ class CmdKitTestTimeout {
         Assert.assertNotEquals(ret, 0)
     }
 
-    @Test(expectedExceptions = [CmdExecException::class])
+    @Test(expected = CmdExecException::class)
     fun testTimeout2() {
         runCatching {
             CmdKit.call("bash ${f.absolutePath}", timeout = 3).check("timeout")
@@ -58,7 +58,7 @@ class CmdKitTestTimeout {
         }.getOrThrow()
     }
 
-    @Test(expectedExceptions = [CmdExecException::class])
+    @Test(expected = CmdExecException::class)
     fun testTimeout3() {
         callCmd("bash ${f.absolutePath}") {
             timeout = 3

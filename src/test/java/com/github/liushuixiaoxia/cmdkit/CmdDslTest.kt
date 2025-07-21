@@ -1,11 +1,11 @@
 package com.github.liushuixiaoxia.cmdkit
 
-import org.testng.annotations.Test
+import org.junit.Test
 import java.io.File
 
 class CmdDslTest {
 
-    @Test(expectedExceptions = [CmdExecException::class])
+    @Test(expected = CmdExecException::class)
     fun testDsl() {
         runCmd("exit 1") {
             checkResult("cmd run fail")

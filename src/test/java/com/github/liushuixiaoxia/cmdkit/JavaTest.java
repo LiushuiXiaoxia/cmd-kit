@@ -1,6 +1,7 @@
 package com.github.liushuixiaoxia.cmdkit;
 
-import org.testng.annotations.Test;
+
+import org.junit.Test;
 
 public class JavaTest {
 

@@ -1,7 +1,7 @@
 package com.github.liushuixiaoxia.cmdkit
 
-import org.testng.Assert
-import org.testng.annotations.Test
+import org.junit.Assert
+import org.junit.Test
 import java.io.File
 
 class CmdKitTestCall {
@@ -20,7 +20,7 @@ class CmdKitTestCall {
         println("after testFail, ret = $ret")
     }
 
-    @Test(expectedExceptions = [CmdExecException::class])
+    @Test(expected = CmdExecException::class)
     fun testCheck() {
         println("before testFail")
         val ret = CmdKit.call("ls -alh dir-${System.currentTimeMillis()}", check = true)
@@ -66,5 +66,14 @@ class CmdKitTestCall {
     fun testShell2() {
         val cmd = "cd ~; ls -lh"
         CmdKit.call(cmd).check("shell")
+    }
+
+    @Test
+    fun testShell3() {
+        val cmd = "cd ~; ls -lh"
+        repeat(10) {
+            val ret = CmdKit.call(cmd).check("shell")
+            println("ret = $ret")
+        }
     }
 }
