@@ -57,7 +57,9 @@ internal class RealCmdResult : CmdResult {
     override val duration: Duration
         get() = internalDuration
 
-    fun allResultLines(): List<ResultLine> = ArrayList(lines)
+    fun allResultLines(): List<ResultLine> {
+        return synchronized(lines) { lines.toList() }
+    }
 
     fun addLine(text: String, error: Boolean = false): ResultLine {
         val line = ResultLine(text, error)
