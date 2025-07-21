@@ -4,6 +4,7 @@ import com.github.liushuixiaoxia.cmdkit.*
 import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
+import java.util.Collections
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
@@ -34,11 +35,23 @@ internal class RealCmdResult : CmdResult {
 
     var e: Throwable? = null
 
-    internal val lines: MutableList<ResultLine> = mutableListOf()
+    internal val lines: MutableList<ResultLine> = Collections.synchronizedList(mutableListOf())
 
-    override val all: List<String> by lazy { lines.map { it.msg }.toList() }
-    override val text: String by lazy { lines.filter { !it.error }.joinToString("\n") { it.msg } }
-    override val error: String by lazy { lines.filter { it.error }.joinToString("\n") { it.msg } }
+    override val all: List<String> by lazy {
+        synchronized(lines) {
+            lines.map { it.msg }.toList()
+        }
+    }
+    override val text: String by lazy {
+        synchronized(lines) {
+            lines.filter { !it.error }.joinToString("\n") { it.msg }
+        }
+    }
+    override val error: String by lazy {
+        synchronized(lines) {
+            lines.filter { it.error }.joinToString("\n") { it.msg }
+        }
+    }
 
     var internalDuration: Duration = Duration.ZERO
     override val duration: Duration
@@ -48,9 +61,7 @@ internal class RealCmdResult : CmdResult {
 
     fun addLine(text: String, error: Boolean = false): ResultLine {
         val line = ResultLine(text, error)
-        synchronized(lines) {
-            lines.add(line)
-        }
+        lines.add(line)
         return line
     }
 
